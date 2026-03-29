@@ -1,0 +1,257 @@
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: linear-gradient(135deg, #eef2f7, #dbe6f6);
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  padding: 30px;
+  text-align: center;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  margin: 20px auto;
+  width: 350px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+input {
+  display: block;
+  padding: 10px;
+  margin: 10px auto;
+  width: 90%;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+input:focus {
+  outline: none;
+  border: 1px solid #007bff;
+}
+
+button {
+  padding: 10px 15px;
+  margin: 6px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+button:hover {
+  background: linear-gradient(135deg, #0056b3, #003f7f);
+  transform: scale(1.05);
+}
+
+img {
+  margin-top: 10px;
+  border-radius: 10px;
+}
+
+.status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  color: white;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.status.authentic {
+  background: #28a745;
+}
+
+.status.expired {
+  background: #fd7e14;
+}
+
+.status.high-risk {
+  background: #dc3545;
+}
+
+/* 🌙 DARK MODE */
+.dark {
+  background: #121212;
+  color: white;
+}
+
+.dark .card {
+  background: #1e1e1e;
+  color: white;
+}
+
+.dark input {
+  background: #2c2c2c;
+  color: white;
+  border: 1px solid #555;
+}
+
+.dark button {
+  background: linear-gradient(135deg, #444, #222);
+}
+
+.card {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card p {
+  font-size: 16px;
+  font-weight: 500;
+}body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: linear-gradient(135deg, #eef2f7, #dbe6f6);
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  padding: 30px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* CARD */
+.card {
+  background: white;
+  padding: 20px;
+  margin: 15px;
+  width: 350px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  transition: all 0.25s ease;
+  animation: fadeIn 0.4s ease-in;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+/* INPUT */
+input {
+  display: block;
+  padding: 10px;
+  margin: 10px auto;
+  width: 90%;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+input:focus {
+  outline: none;
+  border: 1px solid #007bff;
+}
+
+/* BUTTON */
+button {
+  padding: 10px 15px;
+  margin: 6px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+button:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #007bff, #0056b3);
+}
+
+/* IMAGE */
+img {
+  margin-top: 10px;
+  border-radius: 10px;
+}
+
+/* STATUS BADGE */
+.status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  color: white;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.status.authentic {
+  background: #28a745;
+}
+
+.status.expired {
+  background: #fd7e14;
+}
+
+.status.high-risk {
+  background: #dc3545;
+}
+
+/* DARK MODE */
+.dark {
+  background: #121212;
+  color: white;
+}
+
+.dark .card {
+  background: #1e1e1e;
+  color: white;
+}
+
+.dark input {
+  background: #2c2c2c;
+  color: white;
+  border: 1px solid #555;
+}
+
+.dark input::placeholder {
+  color: #bbb;
+}
+
+.dark button {
+  background: linear-gradient(135deg, #444, #222);
+}
+
+.dark button:hover {
+  background: linear-gradient(135deg, #666, #333);
+}
+
+/* TEXT */
+.card p {
+  font-size: 15px;
+  margin: 6px 0;
+}
+
+/* ANIMATION */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
