@@ -4,6 +4,7 @@ backend/node_modules
 
 # Environment variables
 .env
+backend/.env
 
 # Build & artifacts
 artifacts
