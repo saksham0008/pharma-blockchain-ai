@@ -35,7 +35,7 @@ function App() {
     try {
       setLoading(true);
 
-      await axios.post("http://localhost:3000/createDrug", {
+      await axios.post("https://pharma-backend-foox.onrender.com/createDrug", {
         drugID,
         name,
         batch,
@@ -53,7 +53,7 @@ function App() {
   const getDrug = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`http://localhost:3000/getDrug/${drugID}`);
+      const res = await axios.get(`https://pharma-backend-foox.onrender.com/getDrug/${drugID}`);
       setResult(res.data);
       updateStats(res.data);
     } catch {
@@ -66,7 +66,7 @@ function App() {
   const generateQR = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`http://localhost:3000/generateQR/${drugID}`);
+      const res = await axios.get(`https://pharma-backend-foox.onrender.com/generateQR/${drugID}`);
       setQr(res.data.qr);
     } catch {
       alert("Error generating QR");
@@ -84,7 +84,7 @@ function App() {
 
   const getDrugFromScan = async (id) => {
     try {
-      const res = await axios.get(`http://localhost:3000/getDrug/${id}`);
+      const res = await axios.get(`https://pharma-backend-foox.onrender.com/getDrug/${id}`);
       setResult(res.data);
       updateStats(res.data);
     } catch {
