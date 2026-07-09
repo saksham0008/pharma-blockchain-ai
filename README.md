@@ -159,7 +159,9 @@ Future scope includes integrating machine learning models for predictive risk an
 
 ## Author
 
+**Pratham Gupta**
 **Saksham Gupta**
+Github: https://github.com/Pratham274
 GitHub: https://github.com/saksham0008
 
 ---
