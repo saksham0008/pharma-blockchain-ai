@@ -1,10 +1,13 @@
 # Node modules
 node_modules
 backend/node_modules
+frontend/node_modules
 
-# Environment variables
+# Environment variables — never commit these
 .env
 backend/.env
+frontend/.env
+ai-engine/.env
 
 # Build & artifacts
 artifacts
@@ -13,3 +16,23 @@ dist
 bundle
 types
 coverage
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+ai-engine/__pycache__/
+
+# Hardhat
+typechain/
+typechain-types/
+
+# Fabric crypto material (generated — not committed)
+fabric/crypto-config/
+fabric/channel-artifacts/
+fabric/wallet/
+
+# IDE
+.vscode/
+.idea/
+*.swp
