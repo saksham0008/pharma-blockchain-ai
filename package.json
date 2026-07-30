@@ -12,9 +12,14 @@
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.2.3",
     "@nomiclabs/hardhat-etherscan": "^3.1.8",
+    "@types/chai": "^5.2.3",
+    "@types/mocha": "^10.0.10",
     "@types/node": "^22.19.13",
+    "chai": "^6.2.2",
     "ethers": "^5.8.0",
+    "fast-check": "^4.9.0",
     "hardhat": "^2.22.3",
+    "mocha": "^11.7.6",
     "ts-node": "^10.9.2",
     "typescript": "~5.8.0"
   },
