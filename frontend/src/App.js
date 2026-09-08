@@ -1,224 +1,160 @@
+/**
+ * App.js
+ * Application root for PharmaChain AI.
+ *
+ * Provider order (outermost → innermost):
+ *   ThemeProvider → AuthProvider → BrowserRouter
+ *
+ * Route map:
+ *   /login            → LoginPage              (public)
+ *   /verify/:drugID   → PublicVerifyPage        (public — QR scan)
+ *   /admin            → AdminDashboard          (Admin only)
+ *   /manufacturer     → ManufacturerDashboard   (Manufacturer only)
+ *   /distributor      → DistributorDashboard    (Distributor only)
+ *   /pharmacy         → PharmacyDashboard       (Pharmacy only)
+ *   /consumer         → ConsumerDashboard       (Consumer only)
+ *   *                 → redirect /login
+ *
+ * Dashboard pages are lazy-loaded so teammates can add their components
+ * without touching this file beyond the import line.
+ */
+
+import React, { Suspense, lazy } from "react";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+
 import "./App.css";
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { Html5QrcodeScanner } from "html5-qrcode";
 
-function App() {
-  const [drugID, setDrugID] = useState("");
-  const [name, setName] = useState("");
-  const [batch, setBatch] = useState("");
-  const [expiry, setExpiry] = useState("");
-  const [result, setResult] = useState(null);
-  const [qr, setQr] = useState("");
-  const [scannerOn, setScannerOn] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
+import { AuthProvider }            from "./contexts/AuthContext";
+import ProtectedRoute              from "./components/ProtectedRoute.jsx";
+import Header                      from "./components/Header.jsx";
+import LoadingSpinner              from "./components/LoadingSpinner.jsx";
 
-  // 📊 Dashboard state
-  const [stats, setStats] = useState({
-    total: 0,
-    expired: 0,
-    safe: 0
-  });
+// Public pages — eager loaded (needed immediately)
+import LoginPage      from "./pages/LoginPage.jsx";
+import VerifyPage     from "./pages/VerifyPage";
 
-  const createDrug = async () => {
-    if (!expiry) {
-      alert("Please select expiry date");
-      return;
-    }
+// Dashboard pages — lazy loaded (teammates fill these in)
+const AdminDashboard        = lazy(() => import("./pages/dashboards/AdminDashboard"));
+const ManufacturerDashboard = lazy(() => import("./pages/dashboards/ManufacturerDashboard"));
+const DistributorDashboard  = lazy(() => import("./pages/dashboards/DistributorDashboard"));
+const PharmacyDashboard     = lazy(() => import("./pages/dashboards/PharmacyDashboard"));
+const ConsumerDashboard     = lazy(() => import("./pages/dashboards/ConsumerDashboard"));
 
-    const [year, month, day] = expiry.split("-");
-    const expiryTimestamp = Math.floor(
-      new Date(year, month - 1, day).getTime() / 1000
-    );
-
-    try {
-      setLoading(true);
-
-      await axios.post("https://pharma-backend-foox.onrender.com/createDrug", {
-        drugID,
-        name,
-        batch,
-        expiry: expiryTimestamp
-      });
-
-      alert("✅ Drug Created!");
-    } catch (err) {
-      alert(err.response?.data?.error || "Error");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getDrug = async () => {
-    try {
-      setLoading(true);
-      const res = await axios.get(`https://pharma-backend-foox.onrender.com/getDrug/${drugID}`);
-      setResult(res.data);
-      updateStats(res.data);
-    } catch {
-      alert("❌ Drug not found");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const generateQR = async () => {
-    try {
-      setLoading(true);
-      const res = await axios.get(`https://pharma-backend-foox.onrender.com/generateQR/${drugID}`);
-      setQr(res.data.qr);
-    } catch {
-      alert("Error generating QR");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const downloadQR = () => {
-    const link = document.createElement("a");
-    link.href = qr;
-    link.download = "drugQR.png";
-    link.click();
-  };
-
-  const getDrugFromScan = async (id) => {
-    try {
-      const res = await axios.get(`https://pharma-backend-foox.onrender.com/getDrug/${id}`);
-      setResult(res.data);
-      updateStats(res.data);
-    } catch {
-      alert("Drug not found");
-    }
-  };
-
-  const getStatus = () => {
-    if (!result) return "";
-
-    const currentTime = Math.floor(Date.now() / 1000);
-    const expiryTime = Number(result.expiryDate);
-    const risk = Number(result.riskScore);
-
-    if (expiryTime < currentTime) return "EXPIRED";
-    if (risk > 50) return "HIGH RISK";
-    return "AUTHENTIC";
-  };
-
-  const getStatusColor = () => {
-    const status = getStatus();
-    if (status === "AUTHENTIC") return "green";
-    if (status === "EXPIRED") return "orange";
-    return "red";
-  };
-
-  const formatDate = (timestamp) => {
-    const date = new Date(Number(timestamp) * 1000);
-    return date.toDateString();
-  };
-
-  const updateStats = (data) => {
-    const currentTime = Math.floor(Date.now() / 1000);
-    const expiry = Number(data.expiryDate);
-
-    setStats((prev) => ({
-      total: prev.total + 1,
-      expired: expiry < currentTime ? prev.expired + 1 : prev.expired,
-      safe: expiry >= currentTime ? prev.safe + 1 : prev.safe
-    }));
-  };
-
-  useEffect(() => {
-    let scanner;
-
-    if (scannerOn) {
-      scanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
-
-      scanner.render(
-        (decodedText) => {
-          const id = decodedText.split("/").pop();
-          setDrugID(id);
-          getDrugFromScan(id);
-          scanner.clear();
-          setScannerOn(false);
-        },
-        () => {}
-      );
-    }
-
-    return () => {
-      if (scanner) scanner.clear().catch(() => {});
-    };
-  }, [scannerOn]);
-
+// Fallback shown while a lazy dashboard chunk loads
+function PageLoader() {
   return (
-    <div className={`container ${darkMode ? "dark" : ""}`}>
-      <h1 style={{ marginBottom: "10px" }}>
-        💊 Pharma Blockchain System
-      </h1>
-      <p style={{ opacity: 0.7 }}>
-        Secure Drug Verification using Blockchain & QR
-      </p>
-      <button onClick={() => setDarkMode(!darkMode)}>
-        {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
-      </button>
-
-      {loading && <p>⏳ Loading...</p>}
-
-      {/* 📊 Dashboard */}
-      <div className="card">
-        <h3>📊 Dashboard</h3>
-        <p>Total Checked: {stats.total}</p>
-        <p>Safe Drugs: {stats.safe}</p>
-        <p>Expired Drugs: {stats.expired}</p>
-      </div>
-
-      <div className="card">
-        <h3>🧾Create Drug</h3>
-        <input placeholder="Drug ID" onChange={(e) => setDrugID(e.target.value)} />
-        <input placeholder="Name" onChange={(e) => setName(e.target.value)} />
-        <input placeholder="Batch" onChange={(e) => setBatch(e.target.value)} />
-        <input type="date" onChange={(e) => setExpiry(e.target.value)} />
-        <button onClick={createDrug}>Create Drug</button>
-      </div>
-
-      <div className="card">
-        <h3>🔍Get Drug</h3>
-        <input placeholder="Drug ID" onChange={(e) => setDrugID(e.target.value)} />
-        <button onClick={getDrug}>Get Drug</button>
-        <button onClick={generateQR}>Generate QR</button>
-        <button onClick={() => setScannerOn(true)}>📷 Scan QR</button>
-
-        {scannerOn && <div id="reader" style={{ width: "300px", margin: "auto" }}></div>}
-      </div>
-
-      {qr && (
-        <div className="card">
-          <h3>📱 QR Code</h3>
-          <img src={qr} alt="QR" />
-          <br />
-          <button onClick={downloadQR}>⬇️ Download QR</button>
-        </div>
-      )}
-
-      {result && (
-        <div className="card">
-          <h3>📦 Drug Info</h3>
-          <p><b>ID:</b> {result.drugID}</p>
-          <p><b>Name:</b> {result.name}</p>
-          <p><b>Batch:</b> {result.batchNumber}</p>
-          <p><b>Owner:</b> {result.currentOwner}</p>
-          <p><b>Expiry:</b> {formatDate(result.expiryDate)}</p>
-          <p><b>Risk Score:</b> {result.riskScore}</p>
-          <p>
-            <b>Status:</b>{" "}
-            <span className={`status ${getStatus().toLowerCase().replace(" ", "-")}`}>
-              {getStatus()}
-            </span>
-          </p>
-        </div>
-      )}
+    <div style={{
+      height:         "80vh",
+      display:        "flex",
+      alignItems:     "center",
+      justifyContent: "center",
+    }}>
+      <LoadingSpinner size="large" message="Loading…" />
     </div>
   );
 }
 
-export default App;
+// Layout wrapper: Header + page content, dark-mode class applied here
+function AuthenticatedLayout({ children }) {
+  return (
+    <>
+      <Header />
+      <main>{children}</main>
+    </>
+  );
+}
+
+// Inner app reads ThemeContext to apply dark class to root div
+function ThemedApp() {
+  const { darkMode } = useTheme();
+
+  return (
+    <div className={darkMode ? "dark" : ""} style={{ minHeight: "100vh" }}>
+      <BrowserRouter
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+      >
+        <AuthProvider>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+
+              {/* ── Public ───────────────────────────────────────────── */}
+              <Route path="/login"           element={<LoginPage />} />
+              <Route path="/verify/:drugID"  element={<VerifyPage />} />
+
+              {/* ── Protected: role-specific dashboards ──────────────── */}
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedRoute role="Admin">
+                    <AuthenticatedLayout>
+                      <AdminDashboard />
+                    </AuthenticatedLayout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/manufacturer"
+                element={
+                  <ProtectedRoute role="Manufacturer">
+                    <AuthenticatedLayout>
+                      <ManufacturerDashboard />
+                    </AuthenticatedLayout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/distributor"
+                element={
+                  <ProtectedRoute role="Distributor">
+                    <AuthenticatedLayout>
+                      <DistributorDashboard />
+                    </AuthenticatedLayout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/pharmacy"
+                element={
+                  <ProtectedRoute role="Pharmacy">
+                    <AuthenticatedLayout>
+                      <PharmacyDashboard />
+                    </AuthenticatedLayout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/consumer"
+                element={
+                  <ProtectedRoute role="Consumer">
+                    <AuthenticatedLayout>
+                      <ConsumerDashboard />
+                    </AuthenticatedLayout>
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* ── Catch-all ─────────────────────────────────────────── */}
+              <Route path="*" element={<Navigate to="/login" replace />} />
+
+            </Routes>
+          </Suspense>
+        </AuthProvider>
+      </BrowserRouter>
+    </div>
+  );
+}
+
+// Root: ThemeProvider wraps everything
+export default function App() {
+  return (
+    <ThemeProvider>
+      <ThemedApp />
+    </ThemeProvider>
+  );
+}
