@@ -1,15 +1,15 @@
-/**
+﻿/**
  * AdminDashboard.js
- * ─────────────────────────────────────────────────────────
- * PLACEHOLDER — Route: /admin  (Admin role only)
- * ─────────────────────────────────────────────────────────
+ * ---------------------------------------------------------
+ * PLACEHOLDER -- Route: /admin  (Admin role only)
+ * ---------------------------------------------------------
  * Admin teammate: replace this file's body with the full
  * admin dashboard implementation.
  *
  * Available from context (via hooks):
- *   useAuth()  → { wallet, role, token, logout }
- *   useTheme() → { darkMode, toggleDarkMode }
- *   api        → pre-configured Axios instance (src/services/api.js)
+ *   useAuth()  -> { wallet, role, token, logout }
+ *   useTheme() -> { darkMode, toggleDarkMode }
+ *   api        -> pre-configured Axios instance (src/services/api.js)
  */
 
 import React from "react";
@@ -20,9 +20,9 @@ export default function AdminDashboard() {
   return (
     <div style={page}>
       <div style={card}>
-        <h2>🛡️ Admin Dashboard</h2>
+        <h2>Admin Dashboard</h2>
         <p style={sub}>Wallet: <code>{wallet}</code></p>
-        <p style={note}>📌 Placeholder — Admin teammate: implement here.</p>
+        <p style={note}>Placeholder -- Admin teammate: implement here.</p>
       </div>
     </div>
   );

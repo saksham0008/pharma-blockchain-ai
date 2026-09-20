@@ -1,6 +1,6 @@
-# Deployed Contract Addresses
+﻿# Deployed Contract Addresses
 
-## PharmaSupplyChain.sol — Polygon Amoy Testnet
+## PharmaSupplyChain.sol â€” Polygon Amoy Testnet
 
 | Version | Contract Address | Network | Features |
 |---------|-----------------|---------|----------|
@@ -11,12 +11,12 @@
 
 ## Contract Functions
 - createDrug(drugID, name, batchNumber, expiryDate)
-- transferDrug(drugID, newOwner, lat, lng) — GPS coordinates as int256 * 1e6
+- transferDrug(drugID, newOwner, lat, lng) â€” GPS coordinates as int256 * 1e6
 - recallDrug(drugID)
 - updateRiskScore(drugID, riskScore)
-- assignRole(address, role) — roles: 0=None,1=Admin,2=Manufacturer,3=Distributor,4=Pharmacy,5=Consumer
+- assignRole(address, role) â€” roles: 0=None,1=Admin,2=Manufacturer,3=Distributor,4=Pharmacy,5=Consumer
 - getDrug(drugID)
-- getDrugStatus(drugID) — returns 0=Active,1=Recalled,2=Expired
+- getDrugStatus(drugID) â€” returns 0=Active,1=Recalled,2=Expired
 - getTransferHistory(drugID)
 - getTransferCount(drugID)
 
@@ -29,3 +29,24 @@
 | Distributor | 3 |
 | Pharmacy | 4 |
 | Consumer | 5 |
+
+## Blockchain Events
+
+The contract emits the following events, captured by the event listener service and stored in MongoDB:
+
+| Event | Parameters | Notes |
+|-------|-----------|-------|
+| DrugCreated | drugID, manufacturer | Emitted on drug registration |
+| DrugTransferred | drugID, from, to, lat, lng, timestamp | GPS as int256 * 1e6 |
+| RiskScoreUpdated | drugID, riskScore | AI risk score 0-100 |
+| DrugRecalled | drugID, timestamp | Admin recall action |
+| RoleAssigned | user (indexed), role | Role assignment |
+
+## Event Listener
+
+The backend service (`services/eventListenerService.js`) listens to all 5 events and persists them to MongoDB.
+
+- **Start**: Auto-triggered after MongoDB connects in `server.js`
+- **Storage**: MongoDB `eventlogs` collection (EventLog model)
+- **API**: `GET /api/events` with optional `?limit=&eventName=&drugID=` filters
+- **Alerts**: POST to `ALERT_WEBHOOK_URL` on failures (optional, set in `.env`)
