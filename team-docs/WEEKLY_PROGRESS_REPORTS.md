@@ -1,495 +1,476 @@
-# Weekly Progress Reports — Pharma Blockchain AI Project
-## Duration: 6 Weeks | Team: 6 Members
-## Project: Anti-Counterfeit Drug Authentication using Blockchain & AI
+# Project Progress Diary
+## Project Title: PharmChain AI — Anti-Counterfeit Drug Authentication System
+## Team: [Team Name] | Mentor: [Mentor Name] | Academic Year: 2024–2025
+## Duration: 18 Weeks
 
 ---
 
-# MEMBER 1 — SAKSHAM GUPTA (Team Lead / Blockchain Core Developer)
+---
 
-## Week 1 (Research & Architecture)
-**Tasks Completed:**
-- Conducted literature review on blockchain-based pharmaceutical supply chain systems
-- Studied Hyperledger Fabric vs Polygon architecture for dual-chain design
-- Set up development environment: Node.js, Hardhat, MetaMask, Polygon Amoy testnet
-- Created GitHub repository structure with branching strategy
-- Wrote initial project proposal and architecture diagram
-- Attended team kickoff meeting, assigned roles to members
+## WEEK 1
 
-**Commits:** Initial repo setup, README draft, architecture diagram
+### Work Done This Week
+- Conducted team kickoff meeting and finalized project topic
+- Researched existing pharmaceutical counterfeiting problems and reviewed WHO reports
+- Studied blockchain-based supply chain literature and reference papers
+- Explored available blockchain frameworks: Ethereum, Polygon, Hyperledger Fabric
+- Set up GitHub repository: `saksham0008/pharma-blockchain-ai`
+- Created initial project folder structure
+- Installed development environment: Node.js, Git, VS Code, MetaMask extension
+- Drafted initial project proposal document
+
+### Work To Be Done Next Week
+- Finalize system architecture and component diagram
+- Begin Solidity smart contract design
+- Set up Hardhat development environment
+- Study Hyperledger Fabric documentation
+- Define roles and responsibilities for each team member
 
 ---
 
-## Week 2 (Smart Contract Development)
-**Tasks Completed:**
-- Designed the `PharmaSupplyChain.sol` Solidity smart contract
-- Implemented base Role enum (Manufacturer, Distributor, Pharmacy) and Drug struct
-- Wrote `createDrug()`, `transferDrug()`, `getDrug()` functions
-- Set up Hardhat configuration for Polygon Amoy testnet
-- Configured `hardhat.config.ts` with network settings and Polygonscan verification
-- Deployed initial version to Amoy testnet, verified on Polygonscan
+## WEEK 2
 
-**Commits:** feat: initial smart contract, feat: hardhat config amoy testnet
+### Work Done This Week
+- Finalized dual-blockchain architecture: Polygon (public) + Hyperledger Fabric (private)
+- Designed system architecture diagram showing all components and data flows
+- Set up Hardhat with Polygon Amoy testnet configuration in `hardhat.config.ts`
+- Created initial `PharmaSupplyChain.sol` smart contract with basic Drug struct
+- Defined Role enum: None, Manufacturer, Distributor, Pharmacy
+- Implemented `createDrug()` function (Manufacturer only)
+- Implemented `assignRole()` function (Admin only)
+- Implemented `getDrug()` view function
+- Opened Polygon Amoy testnet wallet, obtained test MATIC from faucet
 
----
-
-## Week 3 (Smart Contract Extension + Backend Foundation)
-**Tasks Completed:**
-- Extended smart contract: added GPS coordinates to `transferDrug()` (lat/lng as int256 ×1e6)
-- Added `TransferEvent` struct with full chain-of-custody history
-- Added `DrugStatus` enum (Active/Recalled/Expired) and `getDrugStatus()` view function
-- Implemented `recallDrug()` and `RoleAssigned` event
-- Added `getTransferHistory()` and `getTransferCount()` view functions
-- Wrote 23 Hardhat tests (unit + property-based using fast-check)
-- All tests passing — contract fully covered
-
-**Commits:** feat: GPS transfer history, feat: recall and status functions, test: hardhat unit tests 23 passing
+### Work To Be Done Next Week
+- Add ownership transfer functionality to smart contract
+- Add AI risk score field to Drug struct
+- Begin writing Hardhat unit tests
+- Set up Node.js Express backend skeleton
+- Research QR code generation libraries
 
 ---
 
-## Week 4 (Backend API Development)
-**Tasks Completed:**
-- Restructured backend from single server.js to modular architecture (routes/, middleware/, services/, models/)
-- Built JWT authentication middleware using MetaMask wallet signature verification (ethers.js v6)
-- Implemented `contractService.js` — ethers.js wrapper for all on-chain calls
-- Implemented `cacheService.js` — 60-second TTL MongoDB cache with invalidation
-- Built all 12 REST API endpoints: auth login/me, drug CRUD, transfer, admin recall/assignRole, QR generation, public verify
-- Wrote MongoDB Mongoose models: User, GpsLog, AiScoreLog, DrugCache
+## WEEK 3
 
-**Commits:** feat: modular backend structure, feat: JWT auth middleware, feat: all 12 API routes
+### Work Done This Week
+- Extended `PharmaSupplyChain.sol`:
+  - Added `transferDrug()` function with ownership change
+  - Added `riskScore` field (uint256) to Drug struct
+  - Added `updateRiskScore()` function (Admin only)
+  - Added events: `DrugCreated`, `DrugTransferred`, `RiskScoreUpdated`
+- Set up Node.js Express backend with basic server structure
+- Implemented `POST /createDrug`, `GET /getDrug/:id`, `POST /assignRole` endpoints
+- Integrated `ethers.js v6` for blockchain communication
+- Added QR code generation endpoint `GET /generateQR/:drugID`
+- Added public drug verification endpoint `GET /verify/:drugID`
+- Deployed initial contract version to Polygon Amoy testnet
 
----
-
-## Week 5 (AI Engine + WebSocket)
-**Tasks Completed:**
-- Built Python Flask AI risk scoring engine (`ai-engine/scorer.py`)
-- Implemented 5 additive scoring rules: expiry proximity, transfer count anomaly, time jump, location jump (Haversine distance), batch recall
-- Wired `aiService.js` into transfer route with exponential backoff retry (2s/4s/8s, 3 retries)
-- Built WebSocket service (`wsService.js`) with subscription map for real-time drug tracking updates
-- Wired WebSocket broadcasts into transfer and recall routes
-- Updated `server.js` to share HTTP/WebSocket on same port
-
-**Commits:** feat: python AI risk engine, feat: websocket real-time service, feat: wire AI and WS into transfer route
+### Work To Be Done Next Week
+- Extend smart contract with GPS coordinate tracking per transfer
+- Add drug status management (Active, Recalled, Expired)
+- Add recall functionality
+- Begin writing Hardhat tests
+- Set up React frontend skeleton
 
 ---
 
-## Week 6 (Integration, Testing, Review)
-**Tasks Completed:**
-- End-to-end integration testing of full stack: contract → backend → AI engine → WebSocket
-- Fixed GPS coordinate precision issues (float to BigInt conversion)
-- Updated deploy script to auto-copy ABI to backend
-- Code review of team members' pull requests
-- Final documentation review and sign-off on architecture
-- Project demonstration preparation
+## WEEK 4
 
-**Commits:** fix: GPS precision in contractService, feat: auto ABI copy in deploy script, chore: final integration review
+### Work Done This Week
+- Extended `PharmaSupplyChain.sol` with major new features:
+  - Added `TransferEvent` struct with GPS coordinates (lat/lng as int256 ×1e6), timestamp, sequence index
+  - Added `TransferEvent[]` history array inside Drug struct
+  - Added `DrugStatus` enum: Active, Recalled, Expired
+  - Added `bool recalled` field to Drug struct
+  - Updated `transferDrug()` to accept lat/lng params and append to history
+  - Added `recallDrug()` function (Admin only) with `DrugRecalled` event
+  - Added `getDrugStatus()` view function (computes Expired dynamically from block timestamp)
+  - Added `getTransferHistory()` and `getTransferCount()` view functions
+  - Added `Consumer` and `Admin` to Role enum
+  - Added `RoleAssigned` event to `assignRole()`
+- Updated Hardhat deploy script to auto-copy ABI to backend
 
----
----
-
-# MEMBER 2 — [Name] (Hyperledger Fabric Engineer)
-
-## Week 1 (Research & Setup)
-**Tasks Completed:**
-- Studied Hyperledger Fabric 2.5 architecture (orderers, peers, channels, MSPs, CouchDB)
-- Reviewed existing project codebase and blockchain layer requirements
-- Set up Docker Desktop and Hyperledger Fabric prerequisites
-- Created GitHub branch `feature/hyperledger-fabric`
-- Read Hyperledger Fabric documentation on private data collections
-- Attended team meeting, reviewed architecture diagram with Saksham
-
-**Commits:** chore: setup branch, docs: hyperledger research notes
+### Work To Be Done Next Week
+- Write complete Hardhat unit test suite (target: 20+ tests)
+- Write property-based tests using fast-check
+- Begin modular backend restructure
+- Set up MongoDB for off-chain data storage
 
 ---
 
-## Week 2 (Network Configuration)
-**Tasks Completed:**
-- Designed 3-organization network topology (Manufacturer=Org1, Distributor=Org2, Pharmacy=Org3)
-- Created `fabric/docker-compose.yaml` with orderer, 3 org peers, 2 CAs, 2 CouchDB instances
-- Configured Docker network `pharma-net` for container communication
-- Created `fabric/collections_config.json` with `PharmaPrivateCollection` policy (Org1+Org2 only, Org3 denied)
-- Created network startup script `fabric/scripts/startNetwork.sh`
-- Tested docker-compose up — all containers start successfully
+## WEEK 5
 
-**Commits:** feat: docker-compose hyperledger network, feat: private collection config
+### Work Done This Week
+- Wrote 19 Hardhat unit tests covering:
+  - All revert message strings ("Drug already exists", "Not owner", "Only admin allowed", etc.)
+  - Drug status transitions (Active → Recalled, Active → Expired)
+  - Transfer history append-only immutability
+  - GPS coordinate storage and retrieval
+  - Risk score set/get by admin
+  - Double recall prevention
+  - `RoleAssigned` and `DrugRecalled` event emission
+- Wrote 4 property-based tests using `fast-check`:
+  - Property 1: Drug registration round-trip
+  - Property 2: Duplicate registration always rejected
+  - Property 3: Non-manufacturer always reverts
+  - Property 4: Past expiry always returns Expired status
+- All 23 tests passing
 
----
-
-## Week 3 (Chaincode Development)
-**Tasks Completed:**
-- Implemented `PharmaContract` chaincode using `fabric-contract-api` v2.4.1
-- Wrote `CreateDrugPrivate()` — stores public record + private data (unitCost, batch notes, invoice ref) from transient map
-- Wrote `StorePrivateData()` — update private fields, restricted to Org1/Org2
-- Wrote `GetDrugPrivate()` — returns private data, throws ACCESS_DENIED for Org3MSP
-- Implemented `SyncToPolygon()` — emits event for backend Polygon relay
-- Implemented `GetDrugHistory()` — full CouchDB key history
-- Created chaincode `package.json` and `index.js`
-
-**Commits:** feat: pharma chaincode private data, feat: sync to polygon event
-
----
-
-## Week 4 (Backend Integration)
-**Tasks Completed:**
-- Implemented `fabricService.js` — Fabric gateway wrapper using `fabric-network` SDK
-- Added graceful fallback: if FABRIC_CONNECTION_PROFILE not set, all functions throw FABRIC_UNAVAILABLE
-- Updated `fabric/routes/fabric.js` with full GET `/fabric/drug/:id` endpoint
-- Added JWT protection with role guard (Manufacturer or Distributor only)
-- Tested Pharmacy role returns 403 ACCESS_DENIED as expected
-- Created `deployChaincode.sh` script
-
-**Commits:** feat: fabricService.js backend integration, feat: fabric route with role guard
+### Work To Be Done Next Week
+- Restructure backend into modular architecture (routes/, middleware/, services/, models/)
+- Implement MongoDB Mongoose models
+- Implement JWT authentication middleware
+- Begin contractService.js (ethers.js wrapper)
 
 ---
 
-## Week 5 (Testing & Debug)
-**Tasks Completed:**
-- Tested full Fabric network startup and chaincode instantiation
-- Verified private data collection access control (Org3 denied as expected)
-- Fixed MSP identity check in chaincode (case-sensitive comparison)
-- Tested SyncToPolygon event emission and backend relay mechanism
-- Integrated with Saksham's backend — fabric route tested end-to-end
-- Documented Fabric setup in README section
+## WEEK 6
 
-**Commits:** fix: MSP case sensitive check, test: private collection access verified
+### Work Done This Week
+- Restructured backend from single `server.js` to modular architecture:
+  - `backend/routes/` — auth.js, drugs.js, transfer.js, admin.js, qr.js, fabric.js
+  - `backend/middleware/` — auth.js (JWT), validate.js (GPS)
+  - `backend/services/` — contractService.js, cacheService.js, aiService.js, wsService.js, fabricService.js
+  - `backend/models/` — User.js, GpsLog.js, AiScoreLog.js, DrugCache.js
+- Installed and configured MongoDB with Mongoose
+- Created all 4 Mongoose models with proper indexes and TTL configuration
+- Implemented `contractService.js` — ethers.js v6 wrapper for all on-chain calls including GPS fixed-point conversion
+- Implemented `cacheService.js` — 60-second TTL cache with MongoDB TTL index
 
----
-
-## Week 6 (Documentation & Final)
-**Tasks Completed:**
-- Wrote complete Hyperledger setup documentation in README
-- Added Docker Compose troubleshooting section
-- Created connection profile template for Fabric gateway
-- Reviewed and merged pull request
-- Demonstrated Fabric private data to team
-
-**Commits:** docs: hyperledger setup guide, chore: final PR cleanup
-
----
----
-
-# MEMBER 3 — [Name] (Frontend Auth & Routing Engineer)
-
-## Week 1 (Research & Setup)
-**Tasks Completed:**
-- Studied MetaMask wallet connection and message signing flow
-- Reviewed existing React frontend (single App.js file)
-- Studied React Router v6 documentation
-- Set up local development environment, ran existing frontend
-- Created GitHub branch `feature/frontend-auth`
-- Identified all hardcoded render.com URLs that need replacement
-
-**Commits:** chore: branch setup, docs: frontend research notes
+### Work To Be Done Next Week
+- Implement JWT authentication system with MetaMask wallet signature verification
+- Implement GPS validation middleware
+- Implement all 12 REST API endpoints
+- Begin Python AI engine development
 
 ---
 
-## Week 2 (Context & Routing Setup)
-**Tasks Completed:**
-- Created `AuthContext.js` with wallet/role/token state and localStorage persistence
-- Created `ThemeContext.js` with dark/light mode toggle
-- Installed React Router v6: `npm install react-router-dom@6`
-- Created `api.js` Axios instance with `REACT_APP_API_URL` base URL and auto-auth headers
-- Created `frontend/.env` with API URL configuration
-- Replaced all hardcoded render.com URLs in App.js
+## WEEK 7
 
-**Commits:** feat: AuthContext and ThemeContext, feat: api.js axios instance, fix: remove hardcoded URLs
+### Work Done This Week
+- Implemented JWT authentication middleware:
+  - `issueToken()` — signs JWT with 8-hour expiry
+  - `requireAuth` middleware — validates Bearer token
+  - `roleGuard()` factory — restricts endpoints by role
+- Implemented wallet signature verification using `ethers.verifyMessage()`
+- Implemented GPS coordinate validation middleware (lat: -90 to 90, lng: -180 to 180)
+- Implemented all authentication routes:
+  - `POST /auth/login` — MetaMask signature → role check → JWT issuance
+  - `GET /auth/me` — returns wallet and role from token
+- Implemented all drug routes:
+  - `POST /api/drugs` — register on-chain + MongoDB metadata
+  - `GET /api/drugs/:id` — cached drug detail (60s TTL)
+  - `GET /api/drugs/:id/history` — full transfer history with role labels
+  - `GET /api/drugs/:id/status` — current drug status
+  - `GET /api/drugs/:id/gps` — ordered GPS log entries
 
----
-
-## Week 3 (Routing & Protection)
-**Tasks Completed:**
-- Rewrote `App.js` with full React Router setup — 7 routes covering all roles
-- Created `ProtectedRoute.jsx` — redirects to /login if no JWT or wrong role
-- Created `Header.jsx` — truncated wallet address, role badge, logout, theme toggle
-- Created `LoadingSpinner.jsx` with ARIA accessibility attributes
-- All routes protected by role matching, fallback to /login
-
-**Commits:** feat: react router with all routes, feat: protected route component, feat: header component
-
----
-
-## Week 4 (Login Page)
-**Tasks Completed:**
-- Built `LoginPage.jsx` with full MetaMask integration
-- Implemented wallet connection using `window.ethereum.request`
-- Implemented message signing: "Login to PharmaChain at {timestamp}"
-- POST to `/auth/login`, handle 403 (no role) and 401 (bad signature) errors
-- Implemented role-aware redirect: Manufacturer → /manufacturer, etc.
-- Added loading spinner during signing and API call
-- Handled MetaMask not installed edge case
-
-**Commits:** feat: login page metamask integration, feat: role-based redirect after login
+### Work To Be Done Next Week
+- Implement transfer, admin, and QR routes
+- Build Python Flask AI risk scoring engine
+- Implement WebSocket real-time service
+- Begin frontend React restructure
 
 ---
 
-## Week 5 (Integration Testing)
-**Tasks Completed:**
-- Integrated login flow with live backend
-- Tested all 5 role logins (Admin, Manufacturer, Distributor, Pharmacy)
-- Fixed JWT token expiry handling — redirect to /login when token expires
-- Tested dark/light mode persistence across page refreshes
-- Fixed wallet address truncation edge cases
-- Code review of teammates' dashboard PRs
+## WEEK 8
 
-**Commits:** fix: JWT expiry redirect, fix: wallet address edge cases, fix: dark mode persistence
+### Work Done This Week
+- Implemented remaining backend routes:
+  - `POST /api/transfer` — GPS validation, on-chain transfer, GPS log, cache invalidation, AI trigger
+  - `POST /admin/recall` — recall drug + set risk to 100 + WebSocket broadcast
+  - `POST /admin/assignRole` — assign on-chain role to wallet
+  - `GET /api/generateQR/:drugID` — QR code generation (base64 PNG)
+  - `GET /verify/:drugID` — public verification (HTML + JSON, no auth)
+- Built Python Flask AI risk scoring engine (`ai-engine/scorer.py`):
+  - 5 additive rules: expiry proximity, transfer count anomaly, time jump, location jump (Haversine), batch recall
+  - Categories: Uncolored/Low/Medium/High/Critical
+  - `POST /score` endpoint
+  - `GET /health` endpoint
+- Implemented `aiService.js` with exponential backoff retry (2s/4s/8s, 3 retries)
+- All 12 backend endpoints operational
 
----
-
-## Week 6 (Final Polish)
-**Tasks Completed:**
-- WCAG accessibility audit — added ARIA labels to all interactive elements
-- Tested on Chrome, Firefox, Edge
-- Final PR review and merge
-- Wrote frontend setup section in README
-
-**Commits:** fix: WCAG aria labels, docs: frontend setup in README, chore: final merge
-
----
----
-
-# MEMBER 4 — [Name] (Frontend Dashboards Engineer)
-
-## Week 1 (Research & Setup)
-**Tasks Completed:**
-- Reviewed all backend API endpoints and their request/response formats
-- Studied React patterns for form validation and async state management
-- Created GitHub branch `feature/frontend-dashboards`
-- Set up local environment with backend running locally
-- Made initial test API calls using Postman
-
-**Commits:** chore: branch setup, docs: API endpoint notes
+### Work To Be Done Next Week
+- Implement WebSocket real-time service
+- Wire WebSocket broadcasts into transfer and recall routes
+- Set up React frontend with React Router and authentication
+- Implement MetaMask login page
 
 ---
 
-## Week 2 (Manufacturer Dashboard)
-**Tasks Completed:**
-- Built `ManufacturerDashboard.jsx` — drug registration form with blockchain tx feedback
-- Implemented date picker to Unix timestamp conversion for expiry field
-- Built QR code generation and download functionality
-- Added transfer history display per drug ID
-- Integrated LoadingSpinner for 10-30 second blockchain transactions
-- Handled contract revert errors with human-readable messages
+## WEEK 9
 
-**Commits:** feat: manufacturer dashboard, feat: QR generation and download
+### Work Done This Week
+- Implemented WebSocket service (`wsService.js`):
+  - In-memory subscription map (drugID → Set of WebSocket clients)
+  - `init()` — attaches WebSocket server to HTTP server
+  - `broadcast()` — sends JSON to all subscribers of a drugID
+  - Malformed JSON handling (close with code 1008)
+  - Dead socket cleanup on disconnect
+- Wired WebSocket broadcasts into transfer route (sends transfer + new risk score)
+- Wired WebSocket broadcasts into recall route (sends recall alert)
+- Backend server updated to share HTTP and WebSocket on same port
+- Frontend restructured with React Router v6:
+  - `AuthContext.js` — wallet/role/token with localStorage persistence
+  - `ThemeContext.js` — dark/light mode with localStorage
+  - `api.js` — Axios instance with auto Bearer token header
+  - All hardcoded render.com URLs replaced with `REACT_APP_API_URL`
 
----
-
-## Week 3 (Distributor & Pharmacy Dashboards)
-**Tasks Completed:**
-- Built `DistributorDashboard.jsx` with transfer form
-- Implemented client-side GPS validation: lat -90 to 90, lng -180 to 180
-- Shows risk score update after successful transfer
-- Built `PharmacyDashboard.jsx` with dispense-to-consumer flow
-- Both dashboards show transfer history per drug
-- Tested full transfer flow: Manufacturer → Distributor → Pharmacy
-
-**Commits:** feat: distributor dashboard with GPS validation, feat: pharmacy dashboard
-
----
-
-## Week 4 (Admin Dashboard)
-**Tasks Completed:**
-- Built `AdminDashboard.jsx` with role assignment section
-- Implemented role dropdown mapped to contract enum integers (0-5)
-- Implemented drug recall with confirmation dialog
-- Showed txHash on all successful operations
-- Tested role assignment → login with new role → verify correct dashboard shown
-
-**Commits:** feat: admin dashboard role assignment, feat: recall with confirmation dialog
+### Work To Be Done Next Week
+- Implement LoginPage with full MetaMask integration
+- Implement Header, ProtectedRoute, LoadingSpinner components
+- Implement public VerifyPage
+- Create dashboard placeholder pages for all roles
 
 ---
 
-## Week 5 (Polish & Accessibility)
-**Tasks Completed:**
-- Added form validation messages for all required fields
-- Improved error handling — show specific blockchain revert reason
-- Added loading states for every async operation
-- All form inputs have associated labels (accessibility compliance)
-- Dark mode applied consistently across all 4 dashboards
-- Fixed GPS validation bug — was not rejecting exactly -90.001
+## WEEK 10
 
-**Commits:** fix: GPS boundary validation, fix: dark mode consistency, feat: form validation messages
+### Work Done This Week
+- Implemented `LoginPage.jsx`:
+  - MetaMask wallet connection via `eth_requestAccounts`
+  - Message signing via `personal_sign`
+  - Backend authentication with error handling (403 no role, 401 bad signature)
+  - Role-based redirect after login
+  - Beautiful UI with dark mode support
+- Implemented `Header.jsx` — truncated wallet, color-coded role badges, logout, theme toggle
+- Implemented `ProtectedRoute.jsx` — role-based redirect to /login
+- Implemented `LoadingSpinner.jsx` — 3 sizes, ARIA accessible
+- Implemented `VerifyPage.js` — public drug verification page (no auth)
+- Created placeholder dashboard pages for all 5 roles:
+  - AdminDashboard, ManufacturerDashboard, DistributorDashboard, PharmacyDashboard, ConsumerDashboard
+- Created `vercel.json` and `_redirects` for deployment configuration
+- Merged frontend auth branch into main (21 files, zero conflicts)
 
----
-
-## Week 6 (Final Review)
-**Tasks Completed:**
-- Cross-browser testing of all dashboards
-- Integration testing with live blockchain (Polygon Amoy)
-- Fixed BigInt display issues in transaction hash display
-- Final PR review and merge
-- Demonstrated all 4 dashboards to team
-
-**Commits:** fix: txHash display formatting, chore: final dashboard PR merge
-
----
----
-
-# MEMBER 5 — [Name] (Frontend Map & Verification Engineer)
-
-## Week 1 (Research & Setup)
-**Tasks Completed:**
-- Studied Leaflet.js and react-leaflet for GPS map integration
-- Studied html5-qrcode library for QR scanning
-- Reviewed WebSocket protocol and subscription patterns
-- Created GitHub branch `feature/frontend-verify-map`
-- Set up local environment, tested WebSocket connection to backend
-
-**Commits:** chore: branch setup, docs: leaflet and websocket research
+### Work To Be Done Next Week
+- Implement full Manufacturer Dashboard (drug registration, QR generation, history)
+- Implement full Distributor Dashboard (transfer with GPS)
+- Implement full Pharmacy Dashboard (dispense flow)
+- Implement full Admin Dashboard (role assignment, recall)
 
 ---
 
-## Week 2 (Shared UI Components)
-**Tasks Completed:**
-- Built `RiskBadge.jsx` with 5 color-coded categories — WCAG 4.5:1 compliant
-- Built `RecallBanner.jsx` — full-width red alert with ARIA live region
-- Built `TransferTimeline.jsx` — vertical timeline with role icons
-- Built `QRGenerator.jsx` with download functionality
-- Built `QRScannerModal.jsx` using html5-qrcode library
+## WEEK 11
 
-**Commits:** feat: RiskBadge WCAG compliant, feat: RecallBanner alert, feat: TransferTimeline, feat: QR components
+### Work Done This Week
+- Implemented `ManufacturerDashboard.js` (full implementation):
+  - Drug registration form with blockchain transaction feedback
+  - Date picker with Unix timestamp conversion for expiry
+  - QR code generation and download button
+  - Transfer history view per drug
+  - Loading spinner during blockchain transactions (10-30 seconds)
+  - Smart contract revert error display
+- Implemented `DistributorDashboard.js`:
+  - Drug transfer form with GPS input fields
+  - Client-side GPS validation (lat -90 to 90, lng -180 to 180)
+  - Real-time risk score and category display after transfer
+  - Transfer history view
+- Dark mode support across all dashboards
 
----
-
-## Week 3 (GPS Map Component)
-**Tasks Completed:**
-- Built `GPSMapView.jsx` using react-leaflet MapContainer
-- Implemented markers with popups for each GPS coordinate
-- Added polyline connecting all transfer points
-- Fixed Leaflet default marker icon issue (webpack CSS import problem)
-- Implemented auto-bounds fitting when new GPS points added
-- Tested with real GPS coordinates from Polygon Amoy test transactions
-
-**Commits:** feat: GPSMapView leaflet component, fix: leaflet default marker icon
-
----
-
-## Week 4 (Hooks & WebSocket)
-**Tasks Completed:**
-- Built `useWebSocket.js` hook with subscribe/unsubscribe lifecycle
-- Implemented 10-second polling fallback when WebSocket unavailable
-- Built `useDrug.js` hook for fetching drug verification data
-- Tested live map update when new transfer broadcasted via WebSocket
-- Map updates in real-time without page reload — confirmed working
-
-**Commits:** feat: useWebSocket hook with polling fallback, feat: useDrug hook
+### Work To Be Done Next Week
+- Implement Pharmacy Dashboard (dispense to consumer)
+- Implement Admin Dashboard (role assignment and recall)
+- Implement GPS map component using Leaflet.js
+- Begin shared UI components (RiskBadge, RecallBanner, TransferTimeline)
 
 ---
 
-## Week 5 (Public Verify Page)
-**Tasks Completed:**
-- Built `PublicVerifyPage.jsx` — full consumer verification page
-- RecallBanner renders FIRST before all other content
-- GPS map, risk badge, transfer timeline all integrated
-- QR scanner opens modal for scanning another drug's QR code
-- Live WebSocket updates — map and risk score update on new transfer
-- Drug not found shows counterfeit warning message
-- Tested by scanning real QR code from ManufacturerDashboard
+## WEEK 12
 
-**Commits:** feat: PublicVerifyPage complete, feat: live map updates via websocket
+### Work Done This Week
+- Implemented `PharmacyDashboard.js`:
+  - Drug lookup by ID
+  - Dispense-to-consumer form with consumer wallet address input
+  - Transfer submission and success feedback
+- Implemented full `AdminDashboard.js`:
+  - Role assignment form with dropdown (None/Admin/Manufacturer/Distributor/Pharmacy/Consumer → 0-5)
+  - Drug recall with confirmation dialog ("Are you sure?" before submission)
+  - Success display with txHash
+- Implemented shared UI components:
+  - `RiskBadge.jsx` — color-coded (Uncolored/Low/Medium/High/Critical), WCAG 4.5:1 compliant
+  - `RecallBanner.jsx` — full-width red banner, ARIA live="assertive", renders before all drug info
+  - `TransferTimeline.jsx` — vertical timeline with role icons, timestamps, GPS coordinates
+
+### Work To Be Done Next Week
+- Implement GPS Map component using Leaflet.js
+- Implement QRGenerator and QRScannerModal components
+- Implement useWebSocket and useDrug hooks
+- Update public VerifyPage to use new full /verify/:drugID endpoint
 
 ---
 
-## Week 6 (Final Polish)
-**Tasks Completed:**
-- Tested full consumer journey: scan QR → verify page → live tracking
-- Accessibility audit: added ARIA labels to map and timeline
+## WEEK 13
+
+### Work Done This Week
+- Implemented `GPSMapView.jsx` using react-leaflet:
+  - Interactive Leaflet.js map with OpenStreetMap tiles
+  - Markers at each GPS coordinate with popup (role, timestamp, index)
+  - Polyline connecting all transfer points in chronological order
+  - Auto-fit bounds to all markers
+  - Empty state message when no GPS data
+  - Fixed Leaflet default marker icon issue (webpack CSS import)
+- Implemented `QRGenerator.jsx` — display + programmatic download as PNG
+- Implemented `QRScannerModal.jsx` — html5-qrcode scanner with close button
+- Implemented `useWebSocket.js` hook:
+  - Subscribe/unsubscribe lifecycle management
+  - 10-second polling fallback when WebSocket unavailable
+  - Returns `{ isConnected, lastMessage }`
+- Implemented `useDrug.js` hook — fetch drug data with loading/error states
+
+### Work To Be Done Next Week
+- Implement complete PublicVerifyPage using new API endpoint
+- Set up Hyperledger Fabric local network
+- Write Hyperledger chaincode
+- Integrate Fabric with backend
+
+---
+
+## WEEK 14
+
+### Work Done This Week
+- Implemented full `PublicVerifyPage.jsx`:
+  - Fetches `GET /verify/:drugID` (no auth)
+  - `RecallBanner` renders first (before all drug info) when recalled
+  - Drug info card with name, batch, manufacturer, expiry, status
+  - `RiskBadge` with color-coded risk score
+  - `GPSMapView` with full GPS journey path
+  - `TransferTimeline` with complete transfer history
+  - WebSocket live updates — map and risk score update without page reload
+  - Recall alert received via WebSocket triggers banner immediately
+  - Drug not found shows "❌ May be counterfeit" message
+- Set up Hyperledger Fabric 2.5 local network:
+  - `fabric/docker-compose.yaml` — orderer, 3 org peers (Org1=Manufacturer, Org2=Distributor, Org3=Pharmacy), 2 CAs, 2 CouchDB
+  - `fabric/collections_config.json` — PharmaPrivateCollection (Org1+Org2 only, Org3 denied)
+
+### Work To Be Done Next Week
+- Implement Hyperledger chaincode (PharmaContract)
+- Integrate Fabric with Node.js backend
+- Write property-based tests for AI engine
+- Begin integration testing
+
+---
+
+## WEEK 15
+
+### Work Done This Week
+- Implemented `PharmaContract` Hyperledger chaincode:
+  - `CreateDrugPrivate()` — stores public record + private data (unitCost, batchNotes, invoiceRef) in PharmaPrivateCollection
+  - `StorePrivateData()` — updates private fields, Org1/Org2 only
+  - `GetDrugPrivate()` — returns private data, throws ACCESS_DENIED for Org3MSP
+  - `SyncToPolygon()` — emits event for backend Polygon relay
+  - `GetDrugHistory()` — full CouchDB key history
+- Implemented `fabricService.js` — Fabric gateway wrapper with graceful FABRIC_UNAVAILABLE fallback
+- Implemented `GET /fabric/drug/:id` endpoint (Manufacturer/Distributor only, 503 if Fabric not running)
+- Wrote Hypothesis property-based tests for AI engine:
+  - Property 18: Score always bounded [0, 100]
+  - Property 20: Recalled drug always returns score=100, category=Critical
+- Wrote backend GPS validation property tests using fast-check (Property 13)
+
+### Work To Be Done Next Week
+- Complete smart contract property tests
+- Full integration testing of all layers
+- Write complete README
+- Generate team documentation and progress reports
+
+---
+
+## WEEK 16
+
+### Work Done This Week
+- Completed all integration testing:
+  - Full drug lifecycle tested: Register → Transfer ×3 → Verify → Recall → Verify again
+  - JWT auth flow end-to-end: wallet sign → login → protected endpoints
+  - AI Engine trigger confirmed after every transfer
+  - WebSocket broadcast received by frontend client on transfer and recall
+  - Cache invalidation verified — fresh data after transfer
+  - Fabric private data: Org1 access OK, Org3 denied as expected
+- Fixed GPS coordinate precision bug in contractService.js (float → BigInt conversion)
+- Fixed Leaflet map default marker icon issue in GPSMapView
 - Fixed recall banner not updating on WebSocket recall message
-- Final integration test with full team
-- Created component usage guide for README
+- Updated VerifyPage to use new `/verify/:drugID` endpoint with full history
 
-**Commits:** fix: recall banner live update, docs: component usage guide, chore: final merge
-
----
----
-
-# MEMBER 6 — [Name] (QA & Documentation Engineer)
-
-## Week 1 (Research & Setup)
-**Tasks Completed:**
-- Studied property-based testing with fast-check (JavaScript) and Hypothesis (Python)
-- Reviewed all 30 correctness properties defined in the design document
-- Set up local environment with all 4 services running
-- Created GitHub branch `feature/tests-and-docs`
-- Ran existing 23 Hardhat tests — all passing — established baseline
-
-**Commits:** chore: branch setup, docs: testing strategy research
+### Work To Be Done Next Week
+- Complete README documentation
+- Generate team progress reports and mentor report
+- Final code review and cleanup
+- Prepare project demonstration
 
 ---
 
-## Week 2 (Smart Contract Property Tests)
-**Tasks Completed:**
-- Installed fast-check in root project: `npm install --save-dev fast-check@3.22.0`
-- Wrote `test/contract/transferProperties.test.ts` — Properties 9, 10, 12
-- Property 9: Transfer round-trip verified (owner, count, history entry)
-- Property 10: Non-owner transfer always reverts with "Not owner"
-- Property 12: Transfer history append-only — first entry unchanged after second transfer
-- All 3 property tests passing (5 runs each)
+## WEEK 17
 
-**Commits:** test: transfer property tests P9 P10 P12
+### Work Done This Week
+- Wrote complete `README.md` with:
+  - Project overview and problem statement
+  - Full system architecture diagram
+  - Tech stack table
+  - Step-by-step setup instructions for all 4 services
+  - Complete API documentation (all 12 endpoints)
+  - Smart contract function reference
+  - AI scoring rules explanation
+  - How-to-use guide for each role
+  - WebSocket protocol documentation
+  - Troubleshooting section
+  - Environment variable reference
+- Created `.env.example` files for backend, frontend, and AI engine
+- Created team documentation:
+  - `team-docs/TEAM_DIVISION.md` — work breakdown per member
+  - `team-docs/GPT_PROMPTS_ALL_MEMBERS.md` — AI-assisted development prompts
+  - `team-docs/PROJECT_REPORT_MENTOR.md` — formal mentor report
+- Updated `.gitignore` to exclude all `.env` files, Python cache, Fabric crypto material
 
----
-
-## Week 3 (Recall + Status Tests + Backend Tests)
-**Tasks Completed:**
-- Wrote `test/contract/recallStatus.test.ts` — Properties 15, 16, 17
-- Property 15: Expired drug (expiryDate=1) always returns status 2
-- Property 16: recallDrug sets status to 1 (Recalled)
-- Property 17: Non-admin recall always reverts
-- Wrote `test/backend/gpsValidation.test.js` — Property 13
-- GPS out-of-range coordinates always return HTTP 400 with INVALID_GPS code
-- Valid GPS coordinates always pass middleware (100 fast-check runs)
-
-**Commits:** test: recall status property tests, test: GPS validation property tests P13
-
----
-
-## Week 4 (Python AI Tests)
-**Tasks Completed:**
-- Installed Hypothesis: `pip install hypothesis`
-- Wrote `ai-engine/test_scorer.py` with Hypothesis property tests
-- Property 18: Score always in [0, 100] — tested with 100 random inputs
-- Property 20: batchRecalled=True always returns score=100, category="Critical"
-- Additional test: Each individual rule fires at correct weight when isolated
-- All Hypothesis tests passing
-
-**Commits:** test: hypothesis property tests AI scorer P18 P20
+### Work To Be Done Next Week
+- Final testing on all browsers (Chrome, Firefox, Edge)
+- Deploy to Polygon Amoy testnet (final contract deployment)
+- Prepare presentation slides
+- Submit final project report to mentor
 
 ---
 
-## Week 5 (README & Documentation)
-**Tasks Completed:**
-- Wrote complete `README.md` — prerequisites, step-by-step setup for all 4 services
-- Created environment variables reference table
-- Wrote "How to Use" section: role assignment → drug registration → QR scan flow
-- Created `backend/.env.example` with all 9 env vars and descriptions
-- Created `frontend/.env.example` with 2 env vars and descriptions
-- Wrote Hyperledger Fabric optional setup section
-- Wrote troubleshooting section for common errors
+## WEEK 18
 
-**Commits:** docs: complete README setup guide, docs: env.example files
+### Work Done This Week
+- Final end-to-end testing on Chrome, Firefox, and Edge browsers
+- Deployed final version of `PharmaSupplyChain.sol` to Polygon Amoy testnet
+- Verified contract on Polygonscan
+- All 23 Hardhat tests passing on final contract version
+- All Hypothesis (Python) property tests passing
+- All fast-check (JavaScript) property tests passing
+- Prepared project demonstration flow:
+  - Admin assigns roles → Manufacturer registers drug → QR generated → Distributor transfers with GPS → Pharmacy dispenses → Consumer scans QR → Live map shows full journey
+- Prepared final presentation slides
+- Submitted project report to mentor
+- Conducted final team code review
+- All branches merged into main
 
----
-
-## Week 6 (Final Test Run & Review)
-**Tasks Completed:**
-- Ran full test suite: `npx hardhat test` — 23 tests pass
-- Ran Python tests: `python -m pytest test_scorer.py -v` — all pass
-- Ran GPS validation tests: `node test/backend/gpsValidation.test.js`
-- Identified and fixed one flaky test (timing issue in transfer count test)
-- Final README review with Saksham
-- Project submission checklist completed
-
-**Commits:** fix: flaky test timing issue, docs: final README review, chore: submission checklist
+### Work To Be Done Next Week
+- Project submission complete ✅
+- Viva/demonstration scheduled
 
 ---
 
-# Summary Table
+## Summary
 
-| Member | Role | Main Contribution |
-|--------|------|-------------------|
-| Saksham Gupta | Team Lead | Smart contract, backend, auth, AI engine, WebSocket |
-| Member 1 | Hyperledger Engineer | Private blockchain, chaincode, Fabric integration |
-| Member 2 | Frontend Auth | React Router, AuthContext, LoginPage, Header |
-| Member 3 | Frontend Dashboards | 4 role-based operational dashboards |
-| Member 4 | Frontend Map | GPS map, verification page, QR scanner, WebSocket hook |
-| Member 5 | QA & Docs | Property tests, README, env templates |
+| Week | Key Milestone |
+|------|--------------|
+| 1 | Project kickoff, research, environment setup |
+| 2 | Smart contract v1, basic backend, Hardhat setup |
+| 3 | transferDrug, risk score, QR endpoints, testnet deploy |
+| 4 | GPS tracking, recall, DrugStatus, TransferHistory |
+| 5 | 23 Hardhat tests passing |
+| 6 | Modular backend, MongoDB models, cacheService |
+| 7 | JWT auth, 7 drug endpoints |
+| 8 | 12 endpoints complete, Python AI engine |
+| 9 | WebSocket, React Router, AuthContext |
+| 10 | LoginPage, Header, ProtectedRoute, dashboard placeholders |
+| 11 | Manufacturer + Distributor dashboards |
+| 12 | Pharmacy + Admin dashboards, RiskBadge, RecallBanner |
+| 13 | GPS map, QR scanner, WebSocket hook |
+| 14 | PublicVerifyPage, Hyperledger Fabric network setup |
+| 15 | Hyperledger chaincode + backend integration, property tests |
+| 16 | Full integration testing, bug fixes |
+| 17 | Complete README, documentation, env examples |
+| 18 | Final testing, testnet deployment, submission |
+
+---
+
+*Mentor Signature: _________________________ Date: _____________*

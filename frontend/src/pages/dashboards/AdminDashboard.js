@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AdminDashboard.js
  * Admin dashboard — Route: /admin
  */

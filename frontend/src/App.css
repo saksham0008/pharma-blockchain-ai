@@ -255,3 +255,164 @@ img {
     transform: translateY(0);
   }
 }
+
+/* ============================================================
+   QR SCANNER MODAL - FIXED / NO FLICKER
+   ============================================================ */
+
+.qr-scanner-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(0, 0, 0, 0.75);
+
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.qr-scanner-modal {
+  width: 420px;
+  max-width: 100%;
+
+  background: #ffffff;
+  border-radius: 18px;
+
+  overflow: hidden;
+
+  box-sizing: border-box;
+
+  position: relative;
+
+  flex-shrink: 0;
+}
+
+.qr-scanner-header {
+  height: 76px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 20px;
+
+  box-sizing: border-box;
+}
+
+.qr-scanner-header h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.qr-scanner-header p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  opacity: 0.65;
+}
+
+.qr-scanner-close {
+  width: 36px;
+  height: 36px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #eeeeee;
+
+  font-size: 25px;
+  line-height: 36px;
+
+  cursor: pointer;
+
+  padding: 0;
+
+  flex-shrink: 0;
+}
+
+.qr-camera-container {
+  width: 100%;
+  height: 360px;
+
+  background: #000000;
+
+  overflow: hidden;
+
+  position: relative;
+}
+
+#qr-reader {
+  width: 100% !important;
+  height: 100% !important;
+
+  min-height: 360px;
+
+  background: #000000;
+
+  overflow: hidden;
+}
+
+/* html5-qrcode creates the video dynamically */
+#qr-reader video {
+  width: 100% !important;
+  height: 100% !important;
+
+  object-fit: cover;
+
+  display: block;
+}
+
+/* Keep scanner's dynamically-created UI from changing modal size */
+#qr-reader > div {
+  max-width: 100% !important;
+}
+
+/* Hide html5-qrcode's unnecessary controls */
+#qr-reader__dashboard {
+  display: none !important;
+}
+
+#qr-reader__dashboard_section {
+  display: none !important;
+}
+
+.qr-scanner-footer {
+  height: 56px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 15px;
+
+  box-sizing: border-box;
+
+  font-size: 13px;
+
+  opacity: 0.7;
+
+  text-align: center;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .qr-scanner-overlay {
+    padding: 12px;
+  }
+
+  .qr-scanner-modal {
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .qr-camera-container {
+    height: 320px;
+  }
+
+  #qr-reader {
+    min-height: 320px;
+  }
+}

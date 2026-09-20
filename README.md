@@ -1,6 +1,6 @@
 # PharmChain AI — Anti-Counterfeit Drug Authentication System
 
-> A dual-blockchain pharmaceutical supply chain platform using **Polygon** (public) + **Hyperledger Fabric** (private), AI-powered counterfeit risk scoring, GPS live tracking, QR verification, and real-time WebSocket alerts.
+> A pharmaceutical supply chain platform using **Polygon Amoy** + **MongoDB**, AI-powered counterfeit risk scoring, GPS live tracking, QR verification, and real-time WebSocket alerts.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Solidity](https://img.shields.io/badge/Solidity-0.8.20-blue)](https://soliditylang.org/)
@@ -36,7 +36,7 @@
 
 PharmChain AI is a final year B.Tech project that addresses the global pharmaceutical counterfeiting crisis. WHO estimates that 10% of medicines in developing countries are counterfeit, causing thousands of deaths annually.
 
-The system creates an **immutable digital identity** for every drug unit on the blockchain. Supply chain actors record GPS-verified custody transfers, creating a tamper-proof chain-of-custody. Consumers scan a QR code to instantly verify authenticity, view the drug's full journey on an interactive map, and see an AI-computed risk score.
+The system creates an **immutable digital identity** for every drug unit on the Polygon blockchain. Supply chain actors record GPS-verified custody transfers, creating a tamper-proof chain-of-custody. Consumers scan a QR code to instantly verify authenticity, view the drug's full journey on an interactive map, and see an AI-computed risk score.
 
 ---
 
@@ -61,14 +61,14 @@ The system creates an **immutable digital identity** for every drug unit on the 
 ┌─────────────────────────▼───────────────────────────────────┐
 │                   BACKEND (Node.js/Express)                   │
 │  JWT Auth │ REST API │ WebSocket Server │ Cache (60s TTL)    │
-└──────┬────────────────────┬──────────────────────┬──────────┘
-       │                    │                      │
-       ▼                    ▼                      ▼
-┌─────────────┐  ┌──────────────────┐  ┌─────────────────────┐
-│  AI Engine  │  │  Polygon Amoy    │  │  Hyperledger Fabric  │
-│ Python Flask│  │  Smart Contract  │  │  Private Network     │
-│  /score API │  │  (Public Chain)  │  │  (3 Orgs, CouchDB)  │
-└─────────────┘  └──────────────────┘  └─────────────────────┘
+└──────┬────────────────────┬────────────────────────────────-─┘
+       │                    │
+       ▼                    ▼
+┌─────────────┐  ┌──────────────────┐
+│  AI Engine  │  │  Polygon Amoy    │
+│ Python Flask│  │  Smart Contract  │
+│  /score API │  │  (Public Chain)  │
+└─────────────┘  └──────────────────┘
                           │
                     ┌─────▼──────┐
                     │  MongoDB   │
@@ -82,22 +82,6 @@ The system creates an **immutable digital identity** for every drug unit on the 
 ## Features
 
 ### 🔗 Blockchain Layer (Polygon Amoy)
-- Drug registration with unique ID, name, batch number, expiry date
-- Role-based access control — 6 roles: Admin, Manufacturer, Distributor, Pharmacy, Consumer, None
-- GPS-tracked custody transfers — each transfer records latitude/longitude as fixed-point integers
-- Immutable on-chain transfer history — append-only, tamper-proof
-- Dynamic drug status: **Active / Recalled / Expired** (computed from block timestamp)
-- On-chain risk score updated by AI engine after every transfer
-- Drug recall by admin — broadcasts real-time alert to all stakeholders
-- Events: `DrugCreated`, `DrugTransferred`, `RiskScoreUpdated`, `DrugRecalled`, `RoleAssigned`
-
-### 🔒 Hyperledger Fabric (Private Chain)
-- 3-organization private network: Manufacturer (Org1), Distributor (Org2), Pharmacy (Org3)
-- `PharmaPrivateCollection` — pricing, batch notes, invoices visible to Org1+Org2 only
-- Pharmacy (Org3) receives `ACCESS_DENIED` on private data queries
-- `SyncToPolygon` event for public/private chain synchronization
-
-### 🤖 AI Risk Scoring Engine
 Five additive rules (capped at 100):
 | Rule | Score |
 |------|-------|
@@ -140,7 +124,6 @@ Risk categories: **Uncolored** (0) / **Low** (1–24) / **Medium** (25–49) / *
 | Layer | Technology |
 |-------|-----------|
 | Public Blockchain | Solidity 0.8.20, Hardhat, Polygon Amoy Testnet |
-| Private Blockchain | Hyperledger Fabric 2.5, Fabric-CA 1.5, CouchDB |
 | Backend | Node.js 18, Express 5, ethers.js v6 |
 | Database | MongoDB 7 with Mongoose ODM |
 | AI Engine | Python 3.10, Flask 3.1, Haversine formula |
@@ -175,7 +158,7 @@ pharma-blockchain-ai/
 │   │   ├── transfer.js             # POST /api/transfer
 │   │   ├── admin.js                # Recall + assignRole
 │   │   ├── qr.js                   # QR generation + verify
-│   │   └── fabric.js               # Hyperledger endpoint
+│   │   └── fabric.js               # Fabric endpoint (Polygon-only mode)
 │   ├── middleware/
 │   │   ├── auth.js                 # JWT verification + role guard
 │   │   └── validate.js             # GPS bounds validation
@@ -184,7 +167,7 @@ pharma-blockchain-ai/
 │   │   ├── cacheService.js         # 60s TTL MongoDB cache
 │   │   ├── aiService.js            # AI engine HTTP + retry
 │   │   ├── wsService.js            # WebSocket subscriptions
-│   │   └── fabricService.js        # Hyperledger gateway
+│   │   └── fabricService.js        # Fabric gateway (Polygon-only mode)
 │   ├── models/
 │   │   ├── User.js                 # Wallet + role metadata
 │   │   ├── GpsLog.js               # GPS coordinates per transfer
@@ -200,17 +183,6 @@ pharma-blockchain-ai/
 │   ├── scorer.py                   # 5-rule risk scoring logic
 │   ├── app.py                      # Flask HTTP service
 │   └── requirements.txt
-│
-├── fabric/                         # Hyperledger Fabric network
-│   ├── docker-compose.yaml         # 3-org network
-│   ├── collections_config.json     # Private collection policy
-│   ├── chaincode/
-│   │   └── pharma/
-│   │       ├── pharmaContract.js   # Chaincode
-│   │       └── index.js
-│   └── scripts/
-│       ├── startNetwork.sh
-│       └── deployChaincode.sh
 │
 ├── frontend/
 │   ├── src/
@@ -235,7 +207,6 @@ Before starting, make sure you have:
 - [Node.js 18+](https://nodejs.org/) — for backend and Hardhat
 - [Python 3.10+](https://python.org/) — for AI engine
 - [MongoDB](https://mongodb.com/) — local install or [MongoDB Atlas](https://cloud.mongodb.com/) (free tier)
-- [Docker Desktop](https://docker.com/products/docker-desktop/) — for Hyperledger Fabric (optional)
 - [MetaMask](https://metamask.io/) — browser extension for wallet login
 - Polygon Amoy testnet wallet with test MATIC — get from [Polygon Faucet](https://faucet.polygon.technology/)
 - [Git](https://git-scm.com/)
@@ -316,11 +287,6 @@ MONGO_URI=mongodb://localhost:27017/pharmachain
 
 # External Services
 AI_ENGINE_URL=http://localhost:5000
-
-# Hyperledger Fabric (optional — leave blank if not using Fabric)
-FABRIC_CONNECTION_PROFILE=./fabric/connection-profile.json
-FABRIC_WALLET_PATH=./fabric/wallet
-FABRIC_IDENTITY=admin
 ```
 
 ### Frontend (`frontend/.env`)
@@ -340,7 +306,7 @@ AI_ENGINE_PORT=5000
 
 ## Running the System
 
-Open **4 terminals** and run each service:
+Open **3 terminals** and run each service:
 
 ### Terminal 1 — AI Engine
 ```bash
@@ -362,13 +328,6 @@ cd frontend
 npm start
 ```
 Frontend starts at http://localhost:3000
-
-### Terminal 4 (Optional) — Hyperledger Fabric
-```bash
-cd fabric
-docker-compose up -d
-./scripts/startNetwork.sh
-```
 
 ---
 
@@ -462,7 +421,7 @@ All authenticated endpoints require: `Authorization: Bearer <JWT>`
 
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
-| GET | `/fabric/drug/:id` | Manufacturer/Distributor | Private Fabric data |
+| GET | `/fabric/drug/:id` | Manufacturer/Distributor | Returns 503 — Polygon-only mode |
 
 ---
 
@@ -639,9 +598,6 @@ Or recalled:
 **MongoDB connection error:**
 → Start MongoDB: `mongod --dbpath ./data/db` or use MongoDB Atlas
 
-**Fabric container not starting:**
-→ Make sure Docker Desktop is running before `docker-compose up`
-
 **QR code not scanning:**
 → Allow camera access in browser settings
 
@@ -652,7 +608,7 @@ Or recalled:
 | Name | Role | Contribution |
 |------|------|-------------|
 | **Saksham Gupta** | Team Lead & Blockchain Core | Smart contract, backend, AI engine, WebSocket |
-| **Sadaf** | Hyperledger Fabric Engineer | Private blockchain, chaincode, Fabric integration |
+| **Sadaf** | Blockchain Engineer | Private data design, Fabric integration research |
 | **Pratham Gupta** | Frontend Auth & Routing | React Router, AuthContext, LoginPage, Header |
 | **Vaishnavi Bajpai** | Frontend Dashboards | Manufacturer, Distributor, Pharmacy, Admin dashboards |
 | **Naira Yadav** | Frontend Map & Verification | GPS map, public verify page, QR scanner, WebSocket hook |
@@ -671,11 +627,12 @@ Or recalled:
 
 MIT License — see [LICENSE](LICENSE) file for details.
 
+
+
 ---
 
 ## Acknowledgements
 
-- [Hyperledger Fabric](https://hyperledger-fabric.readthedocs.io/) — private blockchain framework
 - [Polygon](https://polygon.technology/) — public EVM blockchain
 - [OpenStreetMap](https://openstreetmap.org/) — map tiles for Leaflet.js
 - [WHO](https://www.who.int/) — pharmaceutical counterfeiting statistics

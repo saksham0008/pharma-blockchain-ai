@@ -10,6 +10,10 @@ const transferRoutes = require("./routes/transfer");
 const qrRoutes = require("./routes/qr");
 const adminRoutes = require("./routes/admin");
 const fabricRoutes = require("./routes/fabric");
+const eventsRoutes = require("./routes/events");
+
+// Service imports
+const eventListenerService = require("./services/eventListenerService");
 
 const app = express();
 app.use(cors());
@@ -20,7 +24,11 @@ const PORT = process.env.PORT || 4000;
 // MongoDB connection
 if (process.env.MONGO_URI) {
   mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log("MongoDB connected"))
+    .then(() => {
+      console.log("MongoDB connected");
+      // Start blockchain event listener after successful DB connection
+      eventListenerService.startListening();
+    })
     .catch(err => console.error("MongoDB connection error:", err));
 }
 
@@ -37,6 +45,7 @@ app.use("/api", qrRoutes);   // covers GET /api/generateQR/:drugID
 app.use("/", qrRoutes);      // covers GET /verify/:drugID at root level
 app.use("/admin", adminRoutes);
 app.use("/fabric", fabricRoutes);
+app.use("/api/events", eventsRoutes);
 
 // ─── LEGACY ENDPOINTS (kept for backward compatibility) ──────────────────────
 const contract = require("./contract");
@@ -90,6 +99,17 @@ const wsService = require("./services/wsService");
 
 const httpServer = http.createServer(app);
 wsService.init(httpServer);
+
+// Graceful shutdown handler
+process.on("SIGINT", () => {
+  console.log("\n🛑 Shutting down gracefully...");
+  eventListenerService.stopListening();
+  mongoose.connection.close().then(() => {
+    console.log("MongoDB connection closed");
+    console.log("✅ Shutdown complete");
+    process.exit(0);
+  });
+});
 
 httpServer.listen(PORT, "0.0.0.0", () => {
   console.log(`Pharma Blockchain Backend running on port ${PORT}`);

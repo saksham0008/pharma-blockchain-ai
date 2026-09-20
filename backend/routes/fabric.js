@@ -8,8 +8,7 @@ router.get("/drug/:id", requireAuth, roleGuard("Manufacturer", "Distributor"), a
   try {
     if (!fabricService.FABRIC_ENABLED) {
       return res.status(503).json({
-        error: "Hyperledger Fabric is not configured",
-        hint: "Set FABRIC_CONNECTION_PROFILE and FABRIC_WALLET_PATH, then run docker-compose up in fabric/",
+        error: "This endpoint is not available in the current deployment (Polygon-only mode)",
         fabricEnabled: false
       });
     }

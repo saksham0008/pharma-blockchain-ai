@@ -26,3 +26,16 @@ api.interceptors.request.use(
 );
 
 export default api;
+
+/**
+ * getPublicDrug — fetches /verify/:drugID without auth header.
+ * Used by PublicVerifyPage and useDrug hook.
+ */
+export async function getPublicDrug(drugID) {
+  const baseURL = process.env.REACT_APP_API_URL || "http://localhost:4000";
+  const res = await axios.get(`${baseURL}/verify/${drugID}`, {
+    headers: { Accept: "application/json" },
+    timeout: 15000,
+  });
+  return res.data;
+}
