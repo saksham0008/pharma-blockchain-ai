@@ -4,10 +4,10 @@
 
 | Version | Contract Address | Network | Features |
 |---------|-----------------|---------|----------|
-| v2.0 | 0xBA9FD3EAafB01208704a028e488a995CC332e0Fb | Polygon Amoy Testnet | GPS tracking, Recall, AI Risk Score, 6 Roles |
+| v2.0 | 0x849888061134e002b15b160923233400c5D2F3D1 | Polygon Amoy Testnet | GPS tracking, Recall, AI Risk Score, 6 Roles |
 
 ## Explorer Links
-- Contract: https://amoy.polygonscan.com/address/0xBA9FD3EAafB01208704a028e488a995CC332e0Fb
+- Contract: https://amoy.polygonscan.com/address/0x849888061134e002b15b160923233400c5D2F3D1
 
 ## Contract Functions
 - createDrug(drugID, name, batchNumber, expiryDate)
