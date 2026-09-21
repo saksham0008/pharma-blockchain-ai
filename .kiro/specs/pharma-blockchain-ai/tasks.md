@@ -282,7 +282,7 @@ Incremental implementation across nine phases: Smart Contract extension, Backend
 ### Phase 6: Hyperledger Fabric
 
 - [ ] 15. Set up Hyperledger Fabric local network
-  - [-] 15.1 Create fabric/docker-compose.yaml with orderer, 3 org peers, CAs, and CouchDB
+  - [ ] 15.1 Create fabric/docker-compose.yaml with orderer, 3 org peers, CAs, and CouchDB
     - Services: `orderer.example.com` (Solo), `peer0.org1`, `peer0.org2`, `peer0.org3`, `ca.org1`, `ca.org2`, CouchDB instances for org1 and org2, `cli` container
     - Configure `PharmaPrivateCollection` in `collections_config.json`: `memberOrgsPolicy = OR('Org1MSP.member', 'Org2MSP.member')` (excludes Org3/Pharmacy)
     - Create `fabric/scripts/startNetwork.sh` and `fabric/scripts/deployChaincode.sh`
@@ -303,14 +303,14 @@ Incremental implementation across nine phases: Smart Contract extension, Backend
     - `GET /fabric/drug/:id`: JWT-protected (Manufacturer or Distributor only); call `fabricService.GetDrugPrivate`; return full Hyperledger record including private fields
     - _Requirements: 11.2, 11.4, 11.5_
 
-- [~] 16. Checkpoint — Fabric and Backend Integration
+- [ ] 16. Checkpoint — Fabric and Backend Integration
   - Ensure `docker-compose up` starts all Fabric services without errors
   - Ensure `/fabric/drug/:id` returns correct data for Manufacturer/Distributor and 403 for Pharmacy
 
 ### Phase 7: Frontend
 
 - [ ] 17. Set up React application structure, routing, and contexts
-  - [~] 17.1 Configure React Router, AuthContext, ThemeContext, and api.js Axios instance
+  - [ ] 17.1 Configure React Router, AuthContext, ThemeContext, and api.js Axios instance
     - Create `src/contexts/AuthContext.js`: state `{wallet, role, token}`, actions `login(token, role, wallet)`, `logout()`; persist token to localStorage
     - Create `src/contexts/ThemeContext.js`: `{darkMode, toggleDarkMode}`; read initial value from localStorage
     - Create `src/services/api.js`: Axios instance with `baseURL = process.env.REACT_APP_API_URL`; attach `Authorization: Bearer <token>` from AuthContext on every request
@@ -318,14 +318,14 @@ Incremental implementation across nine phases: Smart Contract extension, Backend
     - Wire React Router with routes: `/login`, `/manufacturer`, `/distributor`, `/pharmacy`, `/admin`, `/verify/:drugID`, `*` → `/login`
     - _Requirements: 9.5, 9.6, 16.4_
 
-  - [~] 17.2 Implement ProtectedRoute and Header components
+  - [ ] 17.2 Implement ProtectedRoute and Header components
     - `ProtectedRoute.jsx`: check `token` in AuthContext; redirect to `/login` if absent; optionally check `role` prop and redirect if mismatch
     - `Header.jsx`: display truncated wallet address, role badge (color-coded), logout button (calls `logout()` and pushes to `/login`), dark/light mode toggle
     - `LoadingSpinner.jsx`: spinner/skeleton component shown during async operations
     - _Requirements: 9.5, 9.6, 15.1, 15.4_
 
 - [ ] 18. Implement shared UI components
-  - [~] 18.1 Implement RiskBadge, RecallBanner, TransferTimeline, and QRGenerator
+  - [ ] 18.1 Implement RiskBadge, RecallBanner, TransferTimeline, and QRGenerator
     - `RiskBadge.jsx`: pure component; maps score 0→no badge, 1–24→green, 25–49→yellow, 50–74→orange, 75–100→red; meets WCAG 2.1 AA contrast ratio
     - `RecallBanner.jsx`: prominent warning banner shown when `status === "Recalled"`; renders above all drug info
     - `TransferTimeline.jsx`: ordered list of transfer steps with role icon, actor address, timestamp, GPS label
@@ -337,31 +337,31 @@ Incremental implementation across nine phases: Smart Contract extension, Backend
     - **Property 23: RiskScore color mapping is total and correct** — all values 0–100 return correct color
     - **Validates: Requirements 15.2**
 
-  - [~] 18.3 Implement GPSMapView component (Leaflet.js)
+  - [ ] 18.3 Implement GPSMapView component (Leaflet.js)
     - `GPSMapView.jsx`: render Leaflet map; place marker at each GPS coordinate with popup showing role, timestamp, sequence number; draw polyline in chronological order
     - Accept `gpsPath` array prop; update map when new entry is added (no full page reload)
     - _Requirements: 8.3, 8.4, 8.5_
 
 - [ ] 19. Implement useWebSocket hook and useDrug hook
-  - [~] 19.1 Implement useWebSocket.js hook with polling fallback
+  - [ ] 19.1 Implement useWebSocket.js hook with polling fallback
     - Connect to `REACT_APP_WS_URL`; send `{type:"subscribe", drugID}` on mount; unsubscribe on unmount
     - On message: parse JSON and invoke callback with transfer/recall payload
     - If `WebSocket` unavailable in browser: fall back to `setInterval` polling `GET /api/drugs/:id/history` every 10 seconds
     - Expose `{lastMessage, isConnected}` from hook
     - _Requirements: 8.5, 12.1, 12.5_
 
-  - [~] 19.2 Implement useDrug.js hook — fetch and cache drug data
+  - [ ] 19.2 Implement useDrug.js hook — fetch and cache drug data
     - `useDrug(drugID)`: call `GET /api/drugs/:id` on mount; return `{drug, loading, error, refetch}`
     - _Requirements: 4.1_
 
 - [ ] 20. Implement role-based dashboards and public pages
-  - [~] 20.1 Implement LoginPage.jsx — MetaMask connect and wallet signature login
+  - [ ] 20.1 Implement LoginPage.jsx — MetaMask connect and wallet signature login
     - Connect MetaMask via `window.ethereum`; request accounts; sign message `"Login to PharmaChain at <timestamp>"`
     - POST to `/auth/login` with `{walletAddress, signature, message}`; on success store JWT via `login()` from AuthContext; redirect to role-appropriate dashboard
     - Display human-readable errors from 401/403 responses
     - _Requirements: 10.1, 10.6, 15.5_
 
-  - [~] 20.2 Implement ManufacturerDashboard.jsx
+  - [ ] 20.2 Implement ManufacturerDashboard.jsx
     - List drugs registered by current wallet (call `GET /api/drugs` filtered by manufacturer)
     - Drug registration form: drugID, name, batchNumber, expiryTimestamp, manufacturerName, contactEmail; POST to `/api/drugs`
     - QR generator: call `GET /api/generateQR/:drugID`; render `<QRGenerator>` with download
@@ -369,37 +369,37 @@ Incremental implementation across nine phases: Smart Contract extension, Backend
     - Show `<LoadingSpinner>` during tx wait; show revert error via error toast
     - _Requirements: 1.1, 7.1, 9.1, 15.4, 15.5_
 
-  - [~] 20.3 Implement DistributorDashboard.jsx
+  - [ ] 20.3 Implement DistributorDashboard.jsx
     - List drugs currently owned by this Distributor wallet
     - `TransferForm`: inputs for recipient address, lat, lng; POST to `/api/transfer`; show GPS validation errors
     - Transfer history view using `<TransferTimeline>`
     - _Requirements: 9.2_
 
-  - [~] 20.4 Implement PharmacyDashboard.jsx
+  - [ ] 20.4 Implement PharmacyDashboard.jsx
     - List drugs currently held by this Pharmacy wallet
     - Dispense form: select drug, enter Consumer address; POST to `/api/transfer` to record dispense
     - _Requirements: 9.3_
 
-  - [~] 20.5 Implement AdminDashboard.jsx
+  - [ ] 20.5 Implement AdminDashboard.jsx
     - Role assigner: address input, role selector; POST to `/admin/assignRole`
     - Recall manager: drugID or batchNumber input; POST to `/admin/recall`
     - _Requirements: 2.2, 13.1, 13.4_
 
-  - [~] 20.6 Implement PublicVerifyPage.jsx — no auth required
+  - [ ] 20.6 Implement PublicVerifyPage.jsx — no auth required
     - Fetch from `GET /verify/:drugID`; show `<RecallBanner>` prominently if recalled
     - Render `<DrugInfoCard>` (name, batch, manufacturer, expiry, status), `<RiskBadge>`, `<TransferTimeline>`, `<GPSMapView>`
     - Subscribe to WebSocket for live updates using `useWebSocket(drugID)`
     - Handle 404 with clear "Drug not found / may be counterfeit" message
     - _Requirements: 7.3, 7.4, 8.3, 8.4, 8.6, 9.4, 13.3, 15.1, 15.2_
 
-- [~] 21. Checkpoint — Frontend
+- [ ] 21. Checkpoint — Frontend
   - All routes navigable; ProtectedRoute redirects work; dark/light mode persists across routes
   - `cd frontend && npm test -- --watchAll=false`
 
 ### Phase 8: Tests
 
 - [ ] 22. Complete smart contract property-based and unit test suite
-  - [~] 22.1 Finalize Hardhat fast-check property tests across all contract test files
+  - [ ] 22.1 Finalize Hardhat fast-check property tests across all contract test files
     - `test/contract/drugRegistration.test.ts`: Properties 1, 2, 3, 4
     - `test/contract/roles.test.ts`: Properties 5, 6
     - `test/contract/transfer.test.ts`: Properties 9, 10, 11, 12
@@ -414,7 +414,7 @@ Incremental implementation across nine phases: Smart Contract extension, Backend
     - _Requirements: 1.1, 3.1, 4.3, 5.1, 5.2_
 
 - [ ] 23. Complete backend property-based and unit test suite
-  - [~] 23.1 Finalize fast-check property tests across all backend test files
+  - [ ] 23.1 Finalize fast-check property tests across all backend test files
     - `test/backend/auth.test.js`: Properties 7, 8, 26, 27
     - `test/backend/validation.test.js`: Property 13
     - `test/backend/cache.test.js`: Properties 24, 25
@@ -435,7 +435,7 @@ Incremental implementation across nine phases: Smart Contract extension, Backend
     - _Requirements: 2.5, 2.6, 3.7, 10.1–10.5, 12.2, 12.4, 14.3, 14.4_
 
 - [ ] 24. Complete AI Engine test suite (Hypothesis)
-  - [~] 24.1 Finalize Hypothesis property tests in test/ai/scorer.test.py
+  - [ ] 24.1 Finalize Hypothesis property tests in test/ai/scorer.test.py
     - Properties 18, 19, 20 with `@settings(max_examples=100)`
     - Tag each test: `# Feature: pharma-blockchain-ai, Property N: <property_text>`
     - _Requirements: 6.2, 6.3, 13.5_
@@ -454,7 +454,7 @@ Incremental implementation across nine phases: Smart Contract extension, Backend
     - Verify error toast shows smart contract revert strings
     - _Requirements: 9.1–9.4, 13.3, 15.1–15.5_
 
-- [~] 26. Final Checkpoint — Full Test Suite
+- [ ] 26. Final Checkpoint — Full Test Suite
   - Run all tests: `npx hardhat test && cd backend && npm test && cd ../ai-engine && pytest && cd ../frontend && npm test -- --watchAll=false`
   - All property tests (PBT) must pass with numRuns ≥ 100
   - No failing unit tests
@@ -462,13 +462,13 @@ Incremental implementation across nine phases: Smart Contract extension, Backend
 ### Phase 9: Documentation
 
 - [ ] 27. Write README and environment variable reference
-  - [~] 27.1 Update root README.md with complete setup steps for all services
+  - [ ] 27.1 Update root README.md with complete setup steps for all services
     - Prerequisites (Node.js, Python, Docker, MetaMask, Polygon Amoy faucet)
     - Step-by-step startup commands for: Hardhat deploy, Fabric network, MongoDB, AI Engine, Backend, Frontend
     - Quick-start one-liner per service; link to individual service READMEs
     - _Requirements: 11.6, 16.2–16.6_
 
-  - [~] 27.2 Add environment variable reference section to README
+  - [ ] 27.2 Add environment variable reference section to README
     - Document every env var: `RPC_URL`, `PRIVATE_KEY`, `CONTRACT_ADDRESS`, `BASE_URL`, `JWT_SECRET`, `MONGO_URI`, `AI_ENGINE_URL`, `PORT`, `REACT_APP_API_URL`, `REACT_APP_WS_URL`, `AI_ENGINE_PORT`, `FABRIC_CONNECTION_PROFILE`, `FABRIC_WALLET_PATH`, `WS_PORT`
     - Include example values and description of what each variable controls
     - _Requirements: 16.1_

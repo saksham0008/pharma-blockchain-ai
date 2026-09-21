@@ -26,8 +26,9 @@ if (process.env.MONGO_URI) {
   mongoose.connect(process.env.MONGO_URI)
     .then(() => {
       console.log("MongoDB connected");
-      // Start blockchain event listener after successful DB connection
-      eventListenerService.startListening();
+  // Start blockchain event listener after successful DB connection
+  // Disabled: free RPC endpoints don't support eth_newFilter
+  // eventListenerService.startListening();
     })
     .catch(err => console.error("MongoDB connection error:", err));
 }
